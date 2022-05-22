@@ -1,0 +1,46 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+
+  	match /users/{userId}/profile-picture/{fileName} {
+    	allow read;
+      allow create: if canUploadProfilePicture(userId, fileName);
+      allow delete: if canDeleteProfilePicture(userId);
+    }
+
+    match /users/{userId}/posts/{postId}/{allImages=**} {
+    	allow read;
+      allow create: if canCreatePostMedia(userId);
+      allow delete: if canDeletePostMedia(userId);
+    }
+
+    function canUploadProfilePicture(userId, fileName) {
+    	let isOwner = request.auth.uid == userId;
+      let isCorrectFileName = fileName == "profile.jpg" || fileName == "profile.png";
+      let isCorrectSize = request.resource.size < 2 * 1024 * 1024;
+
+      return isOwner && isCorrectFileName && isCorrectSize;
+    }
+
+    function canDeleteProfilePicture(userId) {
+    	let isOwner = request.auth.uid == userId;
+
+      return isOwner
+    }
+
+    function canCreatePostMedia(userId) {
+    	let isOwner = request.auth.uid == userId;
+      let isImageType = request.resource.contentType.matches("image/.*");
+      let isCorrectSize = request.resource.size < 5 * 1024 * 1024;
+
+      return isOwner && isImageType && isCorrectSize;
+    }
+
+    function canDeletePostMedia(userId) {
+    	let isOwner = request.auth.uid == userId;
+
+      return isOwner;
+    }
+
+  }
+}
