@@ -39,49 +39,54 @@ const Navbar = () => {
                 </div>
               </div>
             ) : (
-              <div className="flex flex-row justify-between items-between gap-8">
+              <div className="flex sm:flex-row w-screen sm:w-auto justify-between sm:items-between px-10 sm:px-0 sm:gap-8 overflow-x-hidden">
                 <Link href="/" passHref>
                   <HomeIcon className="w-9 h-9 sm:hidden" />
                 </Link>
 
-                <div className="flex items-center justify-center">
-                  <Link href="/admin">
-                    <a className="bg-gray-800 hover:bg-gray-900 text-white text-sm sm:text-base font-bold py-2 px-4 rounded-full">
-                      Write Posts
-                    </a>
-                  </Link>
-                  <Link href="/profile">
-                    <a className="bg-gray-800 hover:bg-gray-900 text-white text-sm sm:text-base font-bold py-2 px-4 rounded-full">
-                      profile
-                    </a>
-                  </Link>
-                  <button
-                    className="hidden sm:flex bg-gray-800 hover:bg-gray-900 text-white text-sm sm:text-base font-bold py-2 px-4 ml-2 rounded-full"
-                    onClick={async () => {
-                      await fetch('/api/auth/logout', {
-                        method: 'POST',
-                        headers: {
-                          Authorization: `Basic ${authEncoded}`,
-                          'Content-Type': 'application/json',
-                        },
-                      });
-                      await signOut(auth());
-                      router.push('/');
-                    }}
-                  >
-                    Sign Out
-                  </button>
-                  <Image
-                    src={
-                      auth().currentUser?.photoURL ||
-                      `https://avatars.dicebear.com/api/adventurer/${user.uid}.svg`
-                    }
-                    alt={user.displayName || 'profile picture'}
-                    width={50}
-                    height={50}
-                    className="rounded-full"
-                    onClick={() => router.push(`/${username}`)}
-                  />
+                <div className="flex items-center">
+                  <div className="flex">
+                    <Link href="/admin">
+                      <a className="bg-gray-800 hover:bg-gray-900 text-white text-sm sm:text-base font-bold py-2 px-4 rounded-full">
+                        Write Posts
+                      </a>
+                    </Link>
+                    <Link href="/profile">
+                      <a className="bg-gray-800 hover:bg-gray-900 text-white text-sm sm:text-base font-bold py-2 px-4 rounded-full">
+                        profile
+                      </a>
+                    </Link>
+                    <button
+                      className="hidden sm:flex bg-gray-800 hover:bg-gray-900 text-white text-sm sm:text-base font-bold py-2 px-4 ml-2 rounded-full"
+                      onClick={async () => {
+                        await fetch('/api/auth/logout', {
+                          method: 'POST',
+                          headers: {
+                            Authorization: `Basic ${authEncoded}`,
+                            'Content-Type': 'application/json',
+                          },
+                        });
+                        await signOut(auth());
+                        router.push('/');
+                      }}
+                    >
+                      Sign Out
+                    </button>
+                  </div>
+
+                  <div className="flex">
+                    <Image
+                      src={
+                        auth().currentUser?.photoURL ||
+                        `https://avatars.dicebear.com/api/adventurer/${user.uid}.svg`
+                      }
+                      alt={user.displayName || 'profile picture'}
+                      width={50}
+                      height={50}
+                      className="rounded-full"
+                      onClick={() => router.push(`/${username}`)}
+                    />
+                  </div>
                 </div>
               </div>
             )}
