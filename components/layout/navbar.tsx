@@ -12,7 +12,7 @@ const Navbar = () => {
   const router = useRouter();
 
   return (
-    <nav className="bg-gray-800 text-center lg:text-left py-6 px-4 border-b border-slate-700 w-screen">
+    <nav className="bg-gray-800 text-center lg:text-left py-4 sm:py-6 sm:px-4 border-b border-slate-700 w-screen">
       <div className="container flex flex-wrap justify-between items-center mx-auto">
         <div className="hidden sm:flex px-2 text-xl">
           <Link href="/">devlog</Link>
@@ -39,7 +39,7 @@ const Navbar = () => {
                 </div>
               </div>
             ) : (
-              <div className="flex sm:flex-row w-screen sm:w-auto justify-between sm:items-between px-10 sm:px-0 sm:gap-8 overflow-x-hidden">
+              <div className="flex sm:flex-row w-screen sm:w-auto justify-between sm:items-between px-4 sm:px-0 sm:gap-8">
                 <Link href="/" passHref>
                   <HomeIcon className="w-9 h-9 sm:hidden" />
                 </Link>
