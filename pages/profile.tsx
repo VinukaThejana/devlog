@@ -1,11 +1,8 @@
 import { Layout } from '@components/layout/layout';
 import { Loader } from '@components/utils/loader';
 import { LogoutIcon, PencilIcon } from '@heroicons/react/solid';
-import { sessionOptions } from 'config/session';
 import { useUserContext } from 'context/context';
 import { IFile } from 'interfaces/utils';
-import { ISession } from 'interfaces/session';
-import { withIronSessionSsr } from 'iron-session/next';
 import Image from 'next/image';
 import { ChangeEvent, ReactElement, useEffect, useRef, useState } from 'react';
 import { useStorage } from 'hooks/use-storage';

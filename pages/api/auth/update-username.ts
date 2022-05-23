@@ -1,4 +1,3 @@
-import { firebaseAdmin } from 'config/firebase-admin';
 import { sessionOptions } from 'config/session';
 import { ISession } from 'interfaces/session';
 import { withIronSessionApiRoute } from 'iron-session/next';

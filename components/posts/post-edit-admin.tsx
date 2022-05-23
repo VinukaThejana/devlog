@@ -136,7 +136,7 @@ export const EditAdminPost = (props: {
       {showEditForm && (
         <button
           onClick={async () => {
-            const { uid, slug } = post;
+            const { slug } = post;
             setDeletingPost(true);
 
             const idToken = await auth().currentUser?.getIdToken();

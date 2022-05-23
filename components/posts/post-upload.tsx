@@ -29,7 +29,7 @@ export const MediaUpload = (props: {
       toast.success('Uploading.....');
       setLoading(true);
     }
-  }, [progress]);
+  }, [progress, url]);
 
   const handleUpload = (event: ChangeEvent<HTMLInputElement>) => {
     event.preventDefault();

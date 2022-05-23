@@ -1,7 +1,5 @@
-import { Loader } from '@components/utils/loader';
 import { UserInfo } from 'firebase/auth';
 import { ProviderTypes } from 'interfaces/firebase';
-import { useEffect, useRef, useState } from 'react';
 import { LinkButtons } from './link-buttons';
 
 export const LinkProviders = (props: { providerData: UserInfo[] }) => {

@@ -15,7 +15,7 @@ export const EditSummary = (props: {
 
   const [updatingSummary, setUpdatingSummary] = useState<boolean>(false);
 
-  const { register, handleSubmit, reset, watch, formState } = useForm({
+  const { register, handleSubmit, reset, formState } = useForm({
     defaultValues,
     mode: 'onChange',
   });

@@ -1,7 +1,7 @@
 import { Loader } from '@components/utils/loader';
 import { BadgeCheckIcon, XCircleIcon } from '@heroicons/react/solid';
 import { DB } from '@lib/firebase';
-import { auth, db } from 'config/firebase';
+import { db } from 'config/firebase';
 import { User } from 'firebase/auth';
 import {
   collection,

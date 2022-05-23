@@ -9,7 +9,6 @@ import {
   createUserWithEmailAndPassword,
   sendEmailVerification,
   signInWithEmailAndPassword,
-  signOut,
   updateProfile,
 } from 'firebase/auth';
 import { auth, db } from 'config/firebase';
