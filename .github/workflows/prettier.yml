@@ -1,0 +1,20 @@
+name: Check the source code
+on: push
+
+jobs:
+  format:
+    name: Run prettier
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          ref: ${{ github.head_ref }}
+      - name: Install packages
+        run: npm install
+      - name: Prettier
+        run: npm run fix
+      - name: Commit changes
+        uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: Apply formatting changes
+          branch: ${{ github.head_ref }}
