@@ -47,7 +47,7 @@ export const CreatePost = (props: { username: string; uid: string }) => {
 
   // Check the username
   // eslint-disable-next-line
-  const checkUsername = useCallback(
+  const checkPostSlug = useCallback(
     debounce((slug: string) => {
       let unsubscribe: unknown;
 
@@ -75,8 +75,8 @@ export const CreatePost = (props: { username: string; uid: string }) => {
   );
 
   useEffect(() => {
-    checkUsername(slug);
-  }, [slug, checkUsername]);
+    checkPostSlug(slug);
+  }, [slug, checkPostSlug]);
 
   // Submit the new post
   const onSubmit = async (event: FormEvent<HTMLFormElement>) => {

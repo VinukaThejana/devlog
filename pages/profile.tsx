@@ -198,28 +198,6 @@ const Profile = () => {
   );
 };
 
-// Check if the user is authenticated
-export const getServerSideProps = withIronSessionSsr(
-  async function getServerSideProps(context) {
-    const { session } = context.req;
-
-    // Do not render the page of the session is absent
-    if ((session as ISession).uid) {
-      return {
-        props: {},
-      };
-    }
-
-    return {
-      redirect: {
-        destination: '/login',
-        permanent: false,
-      },
-    };
-  },
-  sessionOptions
-);
-
 Profile.getLayout = function getLayout(page: ReactElement) {
   return <Layout>{page}</Layout>;
 };
