@@ -90,7 +90,7 @@ const Home = (props: { posts: IPostDocument[] }) => {
                 </span>
               </button>
             ) : (
-              <div className="flex flex-col items-center justify-center gap-4">
+              <div className="flex flex-col items-center justify-center gap-4 -mt-16 sm:mt-auto">
                 <Image
                   src={'https://media.giphy.com/media/AYKv7lXcZSJig/giphy.gif'}
                   alt={'Create some posts'}
@@ -116,12 +116,11 @@ const Home = (props: { posts: IPostDocument[] }) => {
 };
 
 export const getServerSideProps: GetServerSideProps = async ({ res }) => {
-
-	// Cache the result for faster client side page navigation
-	res.setHeader(
-		'Cache-Control',
-		'public, s-maxage=10, stale-while-revalidate=59'
-	)
+  // Cache the result for faster client side page navigation
+  res.setHeader(
+    'Cache-Control',
+    'public, s-maxage=10, stale-while-revalidate=59'
+  );
 
   // Create a ref for all the posts of all the users
   const postsRef = collectionGroup(db(), DB.COLLECTIONS.POSTS);
