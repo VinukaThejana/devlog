@@ -16,6 +16,10 @@ import { FancyButton } from '@components/utils/fancybutton';
 import { UserDisplaynameModal } from '@components/profile/user-display-name-modal';
 import { LinkProviders } from '@components/auth/link-providers';
 import { authEncoded } from '@lib/session';
+import { GetServerSideProps } from 'next';
+import { withIronSessionSsr } from 'iron-session/next';
+import { sessionOptions } from 'config/session';
+import { ISession } from 'interfaces/session';
 
 const Profile = () => {
   const { user, username, validating } = useUserContext();
@@ -194,6 +198,26 @@ const Profile = () => {
     </main>
   );
 };
+
+export const getServerSideSideProps: GetServerSideProps = withIronSessionSsr(
+  async function getServerSideProps(context) {
+    const { session } = context.req;
+
+    if (!(session as ISession).uid) {
+      return {
+        redirect: {
+          destination: '/login',
+          permanent: false,
+        },
+      };
+    }
+
+    return {
+      props: {},
+    };
+  },
+  sessionOptions
+);
 
 Profile.getLayout = function getLayout(page: ReactElement) {
   return <Layout>{page}</Layout>;

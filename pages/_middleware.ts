@@ -13,13 +13,6 @@ export const middleware = (req: NextRequest) => {
       ? `https://${hostname}`
       : `http://${hostname}`;
 
-  // Block non authenticated users acsessing the profile page
-  if (url.pathname.startsWith('/profile')) {
-    if (!session) {
-      return NextResponse.rewrite(`${currentHost}/login`);
-    }
-  }
-
   // Block authenticated users from acsessing the login page
   if (url.pathname.startsWith('/login')) {
     if (session) {
