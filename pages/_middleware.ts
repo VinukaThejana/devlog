@@ -29,6 +29,8 @@ export const middleware = (req: NextRequest) => {
 
   // Block authenticated users from acsessing the register page
   if (url.pathname.startsWith('/register')) {
-    return NextResponse.rewrite(`${currentHost}`);
+		if (session) {
+      return NextResponse.rewrite(`${currentHost}`);
+		}
   }
 };
