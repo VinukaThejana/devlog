@@ -16,7 +16,7 @@ import {
   where,
 } from 'firebase/firestore';
 import { IPostDocument } from 'interfaces/firebase';
-import { GetServerSideProps, GetStaticProps } from 'next';
+import { GetServerSideProps } from 'next';
 import Image from 'next/image';
 import { ReactElement, useState } from 'react';
 
@@ -116,6 +116,13 @@ const Home = (props: { posts: IPostDocument[] }) => {
 };
 
 export const getServerSideProps: GetServerSideProps = async ({ res }) => {
+
+	// Cache the result for faster client side page navigation
+	res.setHeader(
+		'Cache-Control',
+		'public, s-maxage=10, stale-while-revalidate=59'
+	)
+
   // Create a ref for all the posts of all the users
   const postsRef = collectionGroup(db(), DB.COLLECTIONS.POSTS);
   const postsQuery = query(
