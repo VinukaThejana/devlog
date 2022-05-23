@@ -29,13 +29,12 @@ export const useUserData = (): {
     if (loading && usernameLoading) {
       setValidating(true);
     } else if (loading) {
-      setValidating(true)
+      setValidating(true);
     } else if (usernameLoading) {
-      setValidating(true)
+      setValidating(true);
     } else {
-      setValidating(false)
+      setValidating(false);
     }
-
   }, [data, error, loading, validating]);
 
   return { user, username, validating };

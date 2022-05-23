@@ -14,35 +14,34 @@ export default withIronSessionApiRoute(async function (
     return res.status(405).send('Invalid method');
   }
 
-	// Get the uid from the session
-	const { uid } = req.session as ISession;
+  // Get the uid from the session
+  const { uid } = req.session as ISession;
 
-	if (!uid) {
-		return res.status(401).send("Not authorized");
-	}
+  if (!uid) {
+    return res.status(401).send('Not authorized');
+  }
 
-	const auth = firebaseAdmin.auth();
+  const auth = firebaseAdmin.auth();
   const db = firebaseAdmin.firestore();
   const storage = firebaseAdmin.storage();
 
   // Get the post Slug and the post Author userId
   const { idToken, slug } = req.body;
 
-	if (!(idToken && slug)) {
-		return res.status(400).send("idToken and/or slug was not provided")
-	}
+  if (!(idToken && slug)) {
+    return res.status(400).send('idToken and/or slug was not provided');
+  }
 
-	try {
-		const decoded = await auth.verifyIdToken(idToken);
+  try {
+    const decoded = await auth.verifyIdToken(idToken);
 
-		if (decoded.uid !== uid) {
-			return res.status(401).send("Unauthorized");
-		}
-
-	} catch (error) {
-		console.error(error);
-		return res.status(401).send("Unauthorized");
-	}
+    if (decoded.uid !== uid) {
+      return res.status(401).send('Unauthorized');
+    }
+  } catch (error) {
+    console.error(error);
+    return res.status(401).send('Unauthorized');
+  }
 
   // Delete the post hearts
   try {

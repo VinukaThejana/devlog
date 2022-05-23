@@ -32,14 +32,14 @@ export const getServerSideProps: GetServerSideProps = withIronSessionSsr(
 
     const { username, uid } = session as ISession;
 
-		if (!(username && uid)) {
-			return {
-				redirect: {
-					destination: "/login",
-					permanent: false
-				}
-			}
-		}
+    if (!(username && uid)) {
+      return {
+        redirect: {
+          destination: '/login',
+          permanent: false,
+        },
+      };
+    }
 
     return {
       props: {

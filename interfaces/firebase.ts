@@ -22,10 +22,10 @@ export interface IPostDocument {
   slug: string;
   title: string;
   uid: string;
-	hearts: number;
+  hearts: number;
   updatedAt: Date;
   username: string;
-	summary: string;
+  summary: string;
 }
 
 export interface IProviderData {

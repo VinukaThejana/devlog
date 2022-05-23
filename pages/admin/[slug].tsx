@@ -67,7 +67,7 @@ const EditPost = (props: { post: IPostDocument }) => {
           defaultValues={post}
           showEditForm={showEditForm}
           showPreviewForm={showPreviewForm}
-					post={post}
+          post={post}
         />
         <MediaUpload post={post} showImageForm={showImageForm} />
         <EditSummary defaultValues={post} showSummaryForm={showSummaryForm} />

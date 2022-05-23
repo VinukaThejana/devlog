@@ -18,7 +18,7 @@ import toast from 'react-hot-toast';
 
 export const CreatePost = (props: { username: string; uid: string }) => {
   const { username, uid } = props;
-	const { user } = useUserContext();
+  const { user } = useUserContext();
 
   const router = useRouter();
 
@@ -84,11 +84,11 @@ export const CreatePost = (props: { username: string; uid: string }) => {
     setCreatingPost(true);
     setIsValid(false);
 
-		if (!user?.emailVerified) {
-			setCreatingPost(false);
-			setIsValid(false);
-			return toast.error("Please verify your email")
-		}
+    if (!user?.emailVerified) {
+      setCreatingPost(false);
+      setIsValid(false);
+      return toast.error('Please verify your email');
+    }
 
     const newPostRef = doc(
       db(),

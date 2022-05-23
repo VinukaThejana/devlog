@@ -3,7 +3,9 @@ import { User } from 'firebase/auth';
 /**
  * @description - Get the authorization token combining the username and the password
  * */
-export const authEncoded = btoa(`${process.env.NEXT_PUBLIC_ROUTE_USERNAME}:${process.env.NEXT_PUBLIC_ROUTE_PASSWORD}`)
+export const authEncoded = btoa(
+  `${process.env.NEXT_PUBLIC_ROUTE_USERNAME}:${process.env.NEXT_PUBLIC_ROUTE_PASSWORD}`
+);
 
 export const reactIfSessionChanged = async (
   validating: boolean | undefined,
@@ -27,14 +29,14 @@ export const reactIfSessionChanged = async (
         const idToken = await user.getIdToken();
 
         // Create a new session for the user
-				await fetch("/api/auth/login", {
-					method: "POST",
-					headers: {
-						"Authorization": `Basic ${authEncoded}`,
-						"Content-Type": "application/json"
-					},
-					body: JSON.stringify({ idToken })
-				})
+        await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: {
+            Authorization: `Basic ${authEncoded}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ idToken }),
+        });
 
         mutate();
       }

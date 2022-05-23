@@ -20,15 +20,11 @@ export const AuthCheck = (props: {
           height={300}
         />
         <Link href="/login">
-            <a className="text-3xl text-center mt-8">
-                Login
-            </a>
+          <a className="text-3xl text-center mt-8">Login</a>
         </Link>
         <p className="text-2xl">or</p>
         <Link href="/register">
-            <a className="text-3xl text-center">
-                Register
-            </a>
+          <a className="text-3xl text-center">Register</a>
         </Link>
       </div>
     );

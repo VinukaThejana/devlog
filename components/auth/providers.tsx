@@ -136,7 +136,7 @@ export const ProviderTypes = (props: {
           await fetch('/api/auth/login', {
             method: 'POST',
             headers: {
-              "Authorization": `Basic ${authEncoded}`,
+              Authorization: `Basic ${authEncoded}`,
               'Content-Type': 'application/json',
             },
             body: JSON.stringify({ idToken }),

@@ -32,10 +32,7 @@ const Post = (props: { post: IPostDocument }) => {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen overflow-x-hidden">
-      <Metatags
-				title={post.title}
-				description={post.summary}
-			/>
+      <Metatags title={post.title} description={post.summary} />
       <main className="flex flex-col items-center px-20 py-20 sm:px-20 sm:py-20">
         <PostContent post={post} />
       </main>

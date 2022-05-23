@@ -15,7 +15,7 @@ import { useEffect, useState } from 'react';
  * */
 export const useStorage = (
   file: IFile | null,
-	fileName: string,
+  fileName: string,
   uid: string | undefined,
   path: string
 ): [number, string | null, IStorageUploadState, StorageError | null] => {
