@@ -115,37 +115,6 @@ const Home = (props: { posts: IPostDocument[] }) => {
   );
 };
 
-/* export const getServerSideProps: GetServerSideProps = async ({ res }) => {
- *   // Cache the result for faster client side page navigation
- *   res.setHeader(
- *     'Cache-Control',
- *     'public, s-maxage=10, stale-while-revalidate=59'
- *   );
- *
- *   // Create a ref for all the posts of all the users
- *   const postsRef = collectionGroup(db(), DB.COLLECTIONS.POSTS);
- *   const postsQuery = query(
- *     postsRef,
- *     where(DB.POSTS.PUBLISHED, '==', true),
- *     orderBy(DB.POSTS.CREATED_AT, 'desc'),
- *     limit(5)
- *   );
- *
- *   const postsSnapshot = await getDocs(postsQuery);
- *
- *   const posts: IPostDocument[] = [];
- *   postsSnapshot.forEach((doc) => {
- *     posts.push(postToJSON(doc) as IPostDocument);
- *   });
- *
- *   return {
- *     props: {
- *       posts,
- *     },
- *   };
- * };
- *  */
-
 export const getStaticProps: GetStaticProps = async () => {
   const postsRef = collectionGroup(db(), DB.COLLECTIONS.POSTS);
   const postsQuery = query(
