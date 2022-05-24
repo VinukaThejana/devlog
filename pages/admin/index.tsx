@@ -28,6 +28,12 @@ const Admin = (props: { username: string; uid: string }) => {
 // Only let authenticated users visit this page
 export const getServerSideProps: GetServerSideProps = withIronSessionSsr(
   async function getServerSideProps(context) {
+    // Cache the result
+    context.res.setHeader(
+      'Cache-Control',
+      'public, s-maxage=10, stale-while-revalidate=59'
+    );
+
     const { session } = context.req;
 
     const { username, uid } = session as ISession;
