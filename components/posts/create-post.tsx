@@ -31,7 +31,7 @@ export const CreatePost = (props: { username: string; uid: string }) => {
 
   const onChange = (event: ChangeEvent<HTMLInputElement>) => {
     setError(null);
-    setTitle(event.target.value);
+    setTitle(event.target.value.toString());
     const value = encodeURI(kebabCase(event.target.value));
 
     if (value.length < 3) {
@@ -45,13 +45,14 @@ export const CreatePost = (props: { username: string; uid: string }) => {
     }
   };
 
-  // Check the username
+  // Check the postSlug
   // eslint-disable-next-line
   const checkPostSlug = useCallback(
     debounce((slug: string) => {
       let unsubscribe: unknown;
 
       if (slug.length >= 3) {
+				console.log("Firebase read executed")
         unsubscribe = onSnapshot(
           doc(db(), DB.COLLECTIONS.USERS, uid, DB.COLLECTIONS.POSTS, slug),
           (postDoc) => {

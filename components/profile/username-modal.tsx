@@ -1,8 +1,8 @@
 import { Loader } from '@components/utils/loader';
 import { BadgeCheckIcon, XCircleIcon } from '@heroicons/react/solid';
 import { DB } from '@lib/firebase';
-import { db } from 'config/firebase';
-import { User } from 'firebase/auth';
+import { auth, db } from 'config/firebase';
+import { signOut, User } from 'firebase/auth';
 import {
   collection,
   deleteDoc,
@@ -127,6 +127,29 @@ export const UsernameModal = (props: {
     });
 
     await batch.commit();
+
+    const idToken = await auth().currentUser?.getIdToken();
+
+    const response = await fetch('/api/posts/update-post-username', {
+      method: 'POST',
+      headers: {
+        Authorization: `Basic ${authEncoded}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ idToken, newUsername: username }),
+    });
+
+    if (Number(response.status) === 500) {
+      return toast.error('There was an error updating the name on your posts');
+    } else if (Number(response.status) === 401) {
+      return signOut(auth());
+    } else if (Number(response.status) === 422) {
+      return toast.error(
+        'You have more than 500 posts to change, please contact us to update your posts'
+      );
+    } else {
+      toast.success('Updated all your posts to use your new username 🙂');
+    }
 
     setValidating(false);
     setUsernameChangeModal(false);
