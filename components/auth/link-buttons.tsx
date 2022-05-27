@@ -1,5 +1,6 @@
 import { Loader } from '@components/utils/loader';
 import { auth } from 'config/firebase';
+import { error } from 'console';
 import { useUserContext } from 'context/context';
 import { FirebaseError } from 'firebase-admin';
 import {
@@ -15,7 +16,7 @@ import {
 } from 'firebase/auth';
 import { ProviderTypes } from 'interfaces/firebase';
 import { useRouter } from 'next/router';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 
 export const LinkButtons = (props: {
@@ -63,35 +64,27 @@ export const LinkButtons = (props: {
     linkWithRedirect(
       auth()?.currentUser as User,
       authProviderObject as AuthProvider
-    )
-      .then(() => {
-        getRedirectResult(auth())
-          .then((result) => {
-            const credential = authProvider.credentialFromResult(
-              result as UserCredential
-            );
+    );
+  };
 
-            setLoading(false);
-            if (credential) {
-              toast.success(`${authProviderName} account linked`);
-            }
-          })
-          .catch((error: FirebaseError) => {
-            setLoading(false);
-            toast.error('Something went wrong');
-            console.error(error);
-          });
+  useEffect(() => {
+    getRedirectResult(auth())
+      .then((result) => {
+        if (result) {
+          toast.success('Account linked');
+        }
       })
       .catch((error: FirebaseError) => {
         setLoading(false);
-        if (error.code === 'auth/provider-already-linked') {
-          toast.error(`Account already linked with ${authProviderName}`);
+
+        if (error.code === 'auth/email-already-in-use') {
+          toast.error('The email provided by the account is already in use');
         } else {
+          toast.error('Something went wrong');
           console.error(error);
-          toast.error('Something wet wrong');
         }
       });
-  };
+  });
 
   // Unlink accounts
   const unLinkProviders = (provider: ProviderTypes) => {
