@@ -178,7 +178,7 @@ export const Email = (props: {
             console.log('id token sent');
 
             mutate();
-            router.push('/');
+            router.reload();
           })
           .catch((error: FirebaseError) => {
             setLoading(false);
@@ -204,7 +204,7 @@ export const Email = (props: {
               body: JSON.stringify({ idToken }),
             });
 
-						mutate();
+            mutate();
             router.push('/');
           })
           .catch((error: FirebaseError) => {
