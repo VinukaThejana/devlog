@@ -143,7 +143,7 @@ export const ProviderTypes = (props: {
           });
 
           // Redirect the user to the home page while mutating the cookie
-					router.reload();
+          router.reload();
         }
       })
       .catch((error: FirebaseError) => {
