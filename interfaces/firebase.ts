@@ -13,7 +13,7 @@ export interface IUserDocument {
   photoURL: string;
   uid: string;
   username: string;
-	posts: number;
+  posts: number;
 }
 
 export interface IPostDocument {
