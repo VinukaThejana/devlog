@@ -66,8 +66,7 @@ export const EditSummary = (props: {
       }
 
       const updateSummaryPhoto = async () => {
-
-				toast.success("Uploaded")
+        toast.success('Uploaded');
 
         const postRef = doc(
           db(),
