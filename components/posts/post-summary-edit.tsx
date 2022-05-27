@@ -63,12 +63,12 @@ export const EditSummary = (props: {
       if (Number(progress) > 0 && Number(progress) < 100 && !url) {
         toast.success('Uploading.....');
         setLoading(true);
-      } else {
-        toast.success('uploaded');
-        setLoading(false);
       }
 
       const updateSummaryPhoto = async () => {
+
+				toast.success("Uploaded")
+
         const postRef = doc(
           db(),
           DB.COLLECTIONS.USERS,
