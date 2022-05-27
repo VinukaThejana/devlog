@@ -1,7 +1,13 @@
 import { Loader } from '@components/utils/loader';
 import { DB } from '@lib/firebase';
 import { auth, db } from 'config/firebase';
-import { doc, serverTimestamp, updateDoc } from 'firebase/firestore';
+import {
+  doc,
+  increment,
+  serverTimestamp,
+  updateDoc,
+  writeBatch,
+} from 'firebase/firestore';
 import { IPostDocument } from 'interfaces/firebase';
 import { useRouter } from 'next/router';
 import { useState } from 'react';
@@ -151,13 +157,29 @@ export const EditAdminPost = (props: {
             });
 
             if (Number(response.status) === 200) {
-              toast.success(`The post ${slug} was deleted`);
+              const batch = writeBatch(db());
+
+              const postRef = doc(
+                db(),
+                DB.COLLECTIONS.USERS,
+                post.uid,
+                DB.COLLECTIONS.POSTS,
+                post.slug
+              );
+              const userRef = doc(db(), DB.COLLECTIONS.USERS, post.uid);
+
+              batch.update(userRef, {
+                posts: increment(-1),
+              });
+              batch.delete(postRef);
+
+              await batch.commit();
+              toast.success(`The post "${slug}" was deleted`);
               router.push('/admin');
             } else {
-              toast.error('Unable to delete the post');
+              toast.error('There was an error deleting the post');
+              setDeletingPost(false);
             }
-
-            setDeletingPost(false);
           }}
           disabled={deletingPost}
           className="box-border relative z-30 inline-flex items-center justify-center w-auto px-8 py-3 overflow-hidden font-bold text-white transition-all duration-300 bg-red-700 rounded-md cursor-pointer group ring-offset-2 ring-1 ring-indigo-300 ring-offset-indigo-200 hover:ring-offset-indigo-500 ease focus:outline-none mt-4"

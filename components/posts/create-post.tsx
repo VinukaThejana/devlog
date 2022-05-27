@@ -3,7 +3,13 @@ import { BadgeCheckIcon, XCircleIcon } from '@heroicons/react/outline';
 import { DB } from '@lib/firebase';
 import { db } from 'config/firebase';
 import { useUserContext } from 'context/context';
-import { doc, onSnapshot, serverTimestamp, setDoc } from 'firebase/firestore';
+import {
+  doc,
+  increment,
+  onSnapshot,
+  serverTimestamp,
+  writeBatch,
+} from 'firebase/firestore';
 import debounce from 'lodash.debounce';
 import kebabCase from 'lodash.kebabcase';
 import { useRouter } from 'next/router';
@@ -91,6 +97,8 @@ export const CreatePost = (props: { username: string; uid: string }) => {
       return toast.error('Please verify your email');
     }
 
+    const batch = writeBatch(db());
+
     const newPostRef = doc(
       db(),
       DB.COLLECTIONS.USERS,
@@ -98,6 +106,7 @@ export const CreatePost = (props: { username: string; uid: string }) => {
       DB.COLLECTIONS.POSTS,
       slug
     );
+    const userRef = doc(db(), DB.COLLECTIONS.USERS, uid);
 
     // Post initial data
     const data = {
@@ -114,7 +123,13 @@ export const CreatePost = (props: { username: string; uid: string }) => {
       updatedAt: serverTimestamp(),
     };
 
-    await setDoc(newPostRef, data);
+    batch.set(newPostRef, data);
+    batch.update(userRef, {
+      posts: increment(1),
+    });
+
+    await batch.commit();
+
     toast.success('The post was created');
 
     router.push(`/admin/${slug}`);

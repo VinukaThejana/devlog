@@ -122,6 +122,7 @@ export const ProviderTypes = (props: {
               photoURL: profilePicture,
               email,
               username,
+              posts: 0,
             });
             batch.set(usernameRef, {
               uid,

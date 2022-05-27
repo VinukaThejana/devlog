@@ -51,19 +51,6 @@ export default withIronSessionApiRoute(async function (
     return res.status(500);
   }
 
-  // Delete the post document
-  try {
-    await db
-      .collection('users')
-      .doc(uid)
-      .collection('posts')
-      .doc(slug)
-      .delete();
-  } catch (error) {
-    console.log(error);
-    return res.status(500);
-  }
-
   // Delete the post media from firebase storage
   try {
     await deleteFolders(storage, `users/${uid}/posts/${slug}/`);

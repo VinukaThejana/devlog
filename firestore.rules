@@ -1,46 +1,129 @@
 rules_version = '2';
-service firebase.storage {
-  match /b/{bucket}/o {
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /{document=**} {
 
-  	match /users/{userId}/profile-picture/{fileName} {
-    	allow read;
-      allow create: if canUploadProfilePicture(userId, fileName);
-      allow delete: if canDeleteProfilePicture(userId);
+      // Allow to read all the posts of all the users if the posts are puiblished by the owner
+      match /posts/{postId} {
+        allow read: if resource.data.published;
+      }
+
+      match /users/{userId} {
+        allow read;
+        allow create: if canCreateUserDoc(userId);
+        allow update: if canUpdateUserDoc(userId) || canUpdatePostCount(userId);
+      }
+
+      match /usernames/{username} {
+        allow read;
+        allow create: if canCreateUsername(username);
+        allow update: if canUpdateUsername(username);
+        allow delete: if request.auth.uid == resource.data.uid;
+      }
+
+      match /users/{userId}/posts/{postId} {
+        allow read;
+        allow create: if canCreatePost(userId);
+        allow update: if canUpdatePost(userId) || canHeartPost(userId, postId);
+        allow delete: if request.auth.uid == userId;
+      }
+
+      match /users/{userId}/posts/{postId}/hearts/{heartId} {
+        allow read;
+        allow write: if request.auth.uid == heartId;
+      }
+
+      // Get the ability for a particular user to create a post
+      function canCreatePost(userId) {
+        let isOwner = request.auth.uid == userId;
+        let isNow = request.time == request.resource.data.createdAt;
+        let sizeValidationForPostContent = request.resource.data.content.size() < 20000;
+        let sizeValidationForPostSummary = request.resource.data.summary.size() < 20000;
+        let sizeValidation = sizeValidationForPostContent && sizeValidationForPostSummary;
+        let heartValidation = request.resource.data.hearts == 0;
+        let isValidContent = sizeValidation && heartValidation;
+        let username = get(/databases/$(database)/documents/users/$(request.auth.uid)).data.username;
+        let usernameMatches = username == request.resource.data.username;
+
+        return isOwner && isNow && isValidContent && usernameMatches;
+      }
+
+      // Get the ability for a particular user to update a post
+      function canUpdatePost(userId) {
+        let isOwner = request.auth.uid == userId;
+        let isValidContent = request.resource.data.content.size() < 20000;
+        let isValidSummary = request.resource.data.summary.size() < 20000;
+        let doesNotUpdateForbbidenFeilds = !request.resource.data.diff(resource.data).affectedKeys().hasAny(["uid", "username", "hearts"]);
+
+        return isOwner && isValidContent && isValidSummary && doesNotUpdateForbbidenFeilds;
+      }
+
+      // Get the ability for a particular user to heart a post
+      function canHeartPost(userId, postId) {
+        let hasValidFeilds = request.resource.data.diff(resource.data).affectedKeys().hasOnly(['hearts']);
+        let currentUser = request.auth.uid;
+        let heartDocExistsAfter = existsAfter(/databases/$(database)/documents/users/$(userId)/posts/$(postId)/hearts/$(currentUser));
+        let heartDocExists = exists(/databases/$(database)/documents/users/$(userId)/posts/$(postId)/hearts/$(currentUser));
+
+        // If the post is hearted
+        let heartDocAdded = !heartDocExists && heartDocExistsAfter;
+        // If the post is unhearted
+        let heartDocRemoved = heartDocExists && !heartDocExistsAfter;
+
+        let countChange = request.resource.data.hearts - resource.data.hearts;
+        let isValidChange = countChange == 1 || countChange == -1;
+
+        return hasValidFeilds && isValidChange && (countChange == 1 ? heartDocAdded : heartDocRemoved);
+      }
+
+      // Get the ability for a particular user to create a username
+      function canCreateUsername(username) {
+        let isOwner = request.auth.uid == request.resource.data.uid;
+        let usernameAfterUpdate = getAfter(/databases/$(database)/documents/users/$(request.auth.uid)).data.username;
+        let usernameMatches = usernameAfterUpdate == username;
+        let isValidLength = username.size() >= 3 && username.size() <= 25;
+
+        return isOwner && usernameMatches && isValidLength;
+      }
+
+      // Get the ability for a particular user to update a username
+      function canUpdateUsername(username) {
+        let isOwner = request.auth.uid == request.resource.data.uid;
+        let usernameAfterUpdate = getAfter(/databases/$(database)/documents/users/$(request.auth.uid)).data.username;
+        let usernameMatches = usernameAfterUpdate == username;
+        let isValidLength = username.size() >= 3 && username.size() <= 25;
+
+        return isOwner && usernameMatches && isValidLength;
+      }
+
+      // Get the ability for a particular user to create a user
+      function canCreateUserDoc(userId) {
+      	let isOwner = request.auth.uid == userId;
+        let doesUsernameDocExsistAfterUpdate = existsAfter(/databases/$(database)/documents/usernames/$(request.resource.data.username));
+        let postCountValidation = request.resource.data.posts == 0;
+
+        return isOwner && doesUsernameDocExsistAfterUpdate && postCountValidation;
+      }
+
+      // Get the ability for a user to update the user document
+      function canUpdateUserDoc(userId) {
+        let isOwner = request.auth.uid == userId;
+        let isUpdatingUsername = request.resource.data.diff(resource.data).affectedKeys().hasAny(["username"]);
+        let username = request.resource.data.username;
+        let doesUsernameExistsAfterUpdate = existsAfter(/databases/$(database)/documents/usernames/$(username));
+
+        return isOwner && (isUpdatingUsername ? doesUsernameExistsAfterUpdate : true);
+      }
+
+      // update the post count
+    	function canUpdatePostCount(userId) {
+      	let isOwner = request.auth.uid == userId;
+        let countChange = request.resource.data.posts - resource.data.posts;
+        let isValidChange = countChange == 1 || countChange == -1;
+
+        return isOwner && isValidChange;
+      }
+
     }
-
-    match /users/{userId}/posts/{postId}/{allImages=**} {
-    	allow read;
-      allow create: if canCreatePostMedia(userId);
-      allow delete: if canDeletePostMedia(userId);
-    }
-
-    function canUploadProfilePicture(userId, fileName) {
-    	let isOwner = request.auth.uid == userId;
-      let isCorrectFileName = fileName == "profile.jpg" || fileName == "profile.png";
-      let isCorrectSize = request.resource.size < 2 * 1024 * 1024;
-
-      return isOwner && isCorrectFileName && isCorrectSize;
-    }
-
-    function canDeleteProfilePicture(userId) {
-    	let isOwner = request.auth.uid == userId;
-
-      return isOwner
-    }
-
-    function canCreatePostMedia(userId) {
-    	let isOwner = request.auth.uid == userId;
-      let isImageType = request.resource.contentType.matches("image/.*");
-      let isCorrectSize = request.resource.size < 5 * 1024 * 1024;
-
-      return isOwner && isImageType && isCorrectSize;
-    }
-
-    function canDeletePostMedia(userId) {
-    	let isOwner = request.auth.uid == userId;
-
-      return isOwner;
-    }
-
   }
 }
