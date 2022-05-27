@@ -21,7 +21,6 @@ export const ProviderTypes = (props: {
   register: boolean;
   setLoading: Dispatch<SetStateAction<boolean>>;
 }) => {
-  const { mutate } = useData();
   const { register, setLoading } = props;
 
   // Supported authentication providers
@@ -144,8 +143,7 @@ export const ProviderTypes = (props: {
           });
 
           // Redirect the user to the home page while mutating the cookie
-          mutate();
-					await router.push("/")
+					router.reload();
         }
       })
       .catch((error: FirebaseError) => {

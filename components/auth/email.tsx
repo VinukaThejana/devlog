@@ -27,7 +27,6 @@ export const Email = (props: {
   setLoading: Dispatch<SetStateAction<boolean>>;
 }) => {
   const { setHideProviders, setLoading } = props;
-  const { mutate } = useData();
 
   const [resetPassword, setResetPassword] = useState<boolean>(false);
   const [passwordVisible, setPasswordVisibility] = useState<boolean>(false);
@@ -177,8 +176,7 @@ export const Email = (props: {
 
             console.log('id token sent');
 
-            mutate();
-            await router.push("/");
+            router.reload();
           })
           .catch((error: FirebaseError) => {
             setLoading(false);
@@ -204,8 +202,7 @@ export const Email = (props: {
               body: JSON.stringify({ idToken }),
             });
 
-            mutate();
-            router.push('/');
+            router.reload();
           })
           .catch((error: FirebaseError) => {
             setLoading(false);
