@@ -204,7 +204,7 @@ export const Email = (props: {
               body: JSON.stringify({ idToken }),
             });
 
-            mutate();
+						mutate();
             router.push('/');
           })
           .catch((error: FirebaseError) => {
