@@ -7,6 +7,7 @@ import {
   collection,
   deleteDoc,
   doc,
+  getDoc,
   getDocs,
   limit,
   onSnapshot,
@@ -128,27 +129,35 @@ export const UsernameModal = (props: {
 
     await batch.commit();
 
-    const idToken = await auth().currentUser?.getIdToken();
+    const userDoc = await getDoc(userRef);
 
-    const response = await fetch('/api/posts/update-post-username', {
-      method: 'POST',
-      headers: {
-        Authorization: `Basic ${authEncoded}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ idToken, newUsername: username }),
-    });
+    // If user have any posts then change the username in those
+    // post Document
+    if (userDoc.data()!.posts) {
+      const idToken = await auth().currentUser?.getIdToken();
 
-    if (Number(response.status) === 500) {
-      return toast.error('There was an error updating the name on your posts');
-    } else if (Number(response.status) === 401) {
-      return signOut(auth());
-    } else if (Number(response.status) === 422) {
-      return toast.error(
-        'You have more than 500 posts to change, please contact us to update your posts'
-      );
-    } else {
-      toast.success('Updated all your posts to use your new username 🙂');
+      const response = await fetch('/api/posts/update-post-username', {
+        method: 'POST',
+        headers: {
+          Authorization: `Basic ${authEncoded}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ idToken, newUsername: username }),
+      });
+
+      if (Number(response.status) === 500) {
+        return toast.error(
+          'There was an error updating the name on your posts'
+        );
+      } else if (Number(response.status) === 401) {
+        return signOut(auth());
+      } else if (Number(response.status) === 422) {
+        return toast.error(
+          'You have more than 500 posts to change, please contact us to update your posts'
+        );
+      } else {
+        toast.success('Updated all your posts to use your new username 🙂');
+      }
     }
 
     setValidating(false);
