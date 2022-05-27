@@ -178,7 +178,7 @@ export const Email = (props: {
             console.log('id token sent');
 
             mutate();
-            router.reload();
+            await router.push("/");
           })
           .catch((error: FirebaseError) => {
             setLoading(false);
