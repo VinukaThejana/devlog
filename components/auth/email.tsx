@@ -164,18 +164,15 @@ export const Email = (props: {
               photoURL: profilePicture,
             });
 
-            console.log('Updatedt the profile');
-
             const idToken = await result.user.getIdToken();
 
-            console.log(idToken, 'user id token');
             await fetch('/api/auth/login', {
               method: 'POST',
               headers: {
                 Authorization: `Basic ${authEncoded}`,
                 'Content-Type': 'application/json',
               },
-              body: JSON.stringify({ idToken, username }),
+              body: JSON.stringify({ idToken }),
             });
 
             console.log('id token sent');
