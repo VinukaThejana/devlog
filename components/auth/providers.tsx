@@ -8,6 +8,7 @@ import {
   GithubAuthProvider,
   GoogleAuthProvider,
   signInWithRedirect,
+    signOut,
   TwitterAuthProvider,
   updateProfile,
 } from 'firebase/auth';
@@ -16,12 +17,14 @@ import { useData } from 'hooks/user-data';
 import { useRouter } from 'next/router';
 import { Dispatch, SetStateAction, useEffect, useReducer } from 'react';
 import { authEncoded } from '@lib/session';
+import toast from 'react-hot-toast';
 
 export const ProviderTypes = (props: {
   register: boolean;
   setLoading: Dispatch<SetStateAction<boolean>>;
 }) => {
   const { register, setLoading } = props;
+	const { mutate } = useData();
 
   // Supported authentication providers
   enum PROVIDERS {
@@ -133,7 +136,7 @@ export const ProviderTypes = (props: {
           const idToken = await result.user.getIdToken();
 
           // Create a session for new as well as loggin in users
-          await fetch('/api/auth/login', {
+          const response = await fetch('/api/auth/login', {
             method: 'POST',
             headers: {
               Authorization: `Basic ${authEncoded}`,
@@ -142,8 +145,14 @@ export const ProviderTypes = (props: {
             body: JSON.stringify({ idToken }),
           });
 
-          // Redirect the user to the home page while mutating the cookie
-          router.reload();
+					if (Number(response.status) === 200) {
+						mutate()
+						router.push("/")
+					} else {
+						toast.error("An error occured")
+						signOut(auth());
+					}
+
         }
       })
       .catch((error: FirebaseError) => {
