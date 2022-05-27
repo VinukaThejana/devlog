@@ -58,7 +58,14 @@ export const PostCard = (props: {
                 <ReactMarkdown>{post.summary}</ReactMarkdown>
               </div>
               <div className="flex justify-between p-5 mt-8">
-                Time to read: {getPostReadingTime(post.content)} minutes
+								<div className="flex flex-col items-center justify-center">
+									Time to read: {getPostReadingTime(post.content)} minutes
+									<>
+										{!admin && (
+											<p>By {post.username}</p>
+										)}
+									</>
+								</div>
                 {admin ? (
                   <>
                     {post.published ? (
