@@ -5,12 +5,12 @@ import { useUserData } from 'hooks/use-user-data';
 import { UserContext } from 'context/context';
 import { Toast } from '@components/utils/toast';
 import { reactIfSessionChanged } from '@lib/session';
-import { useUsername } from 'hooks/user-username';
+import { useData } from 'hooks/user-data';
 import { analytics } from 'config/firebase';
 import { logEvent, setCurrentScreen } from 'firebase/analytics';
 import { useRouter } from 'next/router';
-import '../styles/globals.css';
 import { ProgressBar } from '@components/utils/progress';
+import '../styles/globals.css';
 
 type NextPageWithLayout = NextPage & {
   getLayout?: (page: ReactElement) => ReactNode;
@@ -21,8 +21,8 @@ type AppPropsWithLayout = AppProps & {
 };
 
 const MyApp = ({ Component, pageProps }: AppPropsWithLayout) => {
-  const { user, username, validating } = useUserData();
-  const { mutate } = useUsername();
+  const { user, username, photoURL, validating } = useUserData();
+  const { mutate } = useData();
 
   const router = useRouter();
 
@@ -58,6 +58,7 @@ const MyApp = ({ Component, pageProps }: AppPropsWithLayout) => {
       value={{
         user,
         username,
+        photoURL,
         validating,
       }}
     >

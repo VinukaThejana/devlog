@@ -1,43 +1,42 @@
-import { Layout } from '@components/layout/layout';
-import { Loader } from '@components/utils/loader';
-import { LogoutIcon, PencilIcon } from '@heroicons/react/solid';
+import { DB, deleteUser, logout } from '@lib/firebase';
+import { db } from 'config/firebase';
 import { useUserContext } from 'context/context';
-import { IFile } from 'interfaces/utils';
-import Image from 'next/image';
-import { ChangeEvent, ReactElement, useEffect, useRef, useState } from 'react';
-import { useStorage } from 'hooks/use-storage';
+import { updateProfile, User } from 'firebase/auth';
 import { doc, updateDoc } from 'firebase/firestore';
-import { auth, db } from 'config/firebase';
-import { DB, deleteUser } from '@lib/firebase';
-import { signOut, updateProfile, User } from 'firebase/auth';
+import { useStorage } from 'hooks/use-storage';
+import { useData } from 'hooks/user-data';
+import { IFile } from 'interfaces/utils';
 import { useRouter } from 'next/router';
-import { UsernameModal } from '@components/profile/username-modal';
-import { FancyButton } from '@components/utils/fancybutton';
+import { authEncoded } from 'lib/session';
+import { ChangeEvent, ReactElement, useEffect, useRef, useState } from 'react';
 import { UserDisplaynameModal } from '@components/profile/user-display-name-modal';
+import { UsernameModal } from '@components/profile/username-modal';
+import { LogoutIcon, PencilIcon } from '@heroicons/react/solid';
 import { LinkProviders } from '@components/auth/link-providers';
-import { authEncoded } from '@lib/session';
-import { GetServerSideProps } from 'next';
-import { withIronSessionSsr } from 'iron-session/next';
-import { sessionOptions } from 'config/session';
-import { ISession } from 'interfaces/session';
+import { FancyButton } from '@components/utils/fancybutton';
+import { Loader } from '@components/utils/loader';
+import { Layout } from '@components/layout/layout';
+import Image from 'next/image';
 
-const Profile = () => {
-  const { user, username, validating } = useUserContext();
+export default function Profile() {
+  const { user, username, photoURL, validating } = useUserContext();
+  const { mutate } = useData();
 
   const router = useRouter();
 
-  // For changing the profile picture
+  // Change the profile picture
   const [profilePicture, setProfilePicture] = useState<IFile | null>(null);
   const profilePictureUploadRef = useRef<HTMLInputElement>(null);
 
-  // For changing the username
+  // Changing the username
   const [showUsernameChangeModal, setUsernameChangeModal] =
     useState<boolean>(false);
 
-  // For changing the user displayName
+  // Changing the displayname
   const [showUserDisplaynameModal, setUserDisplaynameModal] =
     useState<boolean>(false);
 
+  // use the storage hook to upload the profile image to firebase
   const [progress, url] = useStorage(
     profilePicture,
     'profile.jpg',
@@ -45,59 +44,68 @@ const Profile = () => {
     'profile-picture'
   );
 
-  // Hide the input button and emitate clicking it when the custom
-  // button is pressed
-  const triggerProfilePictureUpoad = () => {
+  // Handle uploading of the profile picture
+  const triggerProfilePictureUpload = () => {
     profilePictureUploadRef.current?.click();
   };
 
-  // Handle the profile picture upload event
   const handleProfilePictureUploadEvent = (
     event: ChangeEvent<HTMLInputElement>
   ) => {
-    event.preventDefault();
     if (event.target.files instanceof FileList) {
       setProfilePicture(event.target.files[0]);
     }
   };
 
-  // Listen to changes in the profilePicture and trigger the
-  // upload event accordingly
-  useEffect(() => {
-    if (url) {
-      const updateTheProfilePicture = async () => {
-        // Update the profile pciture on the users/uid document
-        const userRef = doc(db(), DB.COLLECTIONS.USERS, user?.uid as string);
+  // update the firestore, session and auth database after upload complete
+  const updateProfilePictureInfo = async () => {
+    // Ref top the user document
+    const userRef = doc(db(), DB.COLLECTIONS.USERS, user?.uid as string);
 
-        await updateDoc(userRef, {
-          photoURL: url,
-        });
+    await updateDoc(userRef, {
+      photoURL: url,
+    });
 
-        // Update the profile pcture in the firebase
-        // authentication database
-        updateProfile(user as User, {
-          photoURL: url,
-        })
-          .then(async () => {
-            setProfilePicture(null);
-            await auth().currentUser?.reload();
-            router.push('/profile');
-          })
-          .catch((error) => console.error(error));
-        setProfilePicture(null);
-      };
+    // update the auth database
+    await updateProfile(user as User, {
+      photoURL: url,
+    });
 
-      updateTheProfilePicture();
-    }
-  }, [url, user, router]);
+    // update the session
+    await fetch('/api/auth/update-photo-url', {
+      method: 'POST',
+      headers: {
+        Authorization: `Basic ${authEncoded}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ photoURL: url }),
+    });
 
-  return !validating ? (
+    setProfilePicture(null);
+
+    mutate();
+    router.push('/profile');
+  };
+
+  useEffect(
+    () => {
+      url && profilePicture && updateProfilePictureInfo();
+    },
+    // eslint-disable-next-line
+    [url, profilePicture]
+  );
+
+  return validating ? (
     <main className="flex flex-col items-center justify-center min-h-screen">
-      {user && (
+      <Loader show={validating} />
+    </main>
+  ) : (
+    <main className="flex flex-col items-center justify-center min-h-screen">
+      {user && photoURL && (
         <div className="flex flex-col items-center justify-center px-10 py-20">
           <h1 className="text-3xl mb-8">{user?.displayName}</h1>
           <Image
-            src={user.photoURL as string}
+            src={photoURL}
             alt={user.displayName as string}
             width={200}
             height={200}
@@ -121,7 +129,7 @@ const Profile = () => {
                   <PencilIcon
                     className="h-12 z-50 -mt-8 ml-24 bg-black rounded-full p-2"
                     type="button"
-                    onClick={triggerProfilePictureUpoad}
+                    onClick={triggerProfilePictureUpload}
                   />
                 </>
               )}
@@ -152,14 +160,7 @@ const Profile = () => {
 
           <button
             onClick={async () => {
-              await fetch('/api/auth/logout', {
-                method: 'POST',
-                headers: {
-                  Authorization: `Basic ${authEncoded}`,
-                  'Content-Type': 'application/json',
-                },
-              });
-              await signOut(auth());
+              await logout();
               router.push('/');
             }}
             className="inline-block py-3 text-xl text-white bg-gray-800 px-8 hover:bg-gray-700 rounded-xl mt-4 flex"
@@ -192,35 +193,9 @@ const Profile = () => {
         </div>
       )}
     </main>
-  ) : (
-    <main className="flex flex-col items-center justify-center min-h-screen">
-      <Loader show={validating} />
-    </main>
   );
-};
-
-export const getServerSideSideProps: GetServerSideProps = withIronSessionSsr(
-  async function getServerSideProps(context) {
-    const { session } = context.req;
-
-    if (!(session as ISession).uid) {
-      return {
-        redirect: {
-          destination: '/login',
-          permanent: false,
-        },
-      };
-    }
-
-    return {
-      props: {},
-    };
-  },
-  sessionOptions
-);
+}
 
 Profile.getLayout = function getLayout(page: ReactElement) {
   return <Layout>{page}</Layout>;
 };
-
-export default Profile;

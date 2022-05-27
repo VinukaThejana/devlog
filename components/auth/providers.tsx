@@ -12,7 +12,7 @@ import {
   updateProfile,
 } from 'firebase/auth';
 import { doc, writeBatch } from 'firebase/firestore';
-import { useUsername } from 'hooks/user-username';
+import { useData } from 'hooks/user-data';
 import { useRouter } from 'next/router';
 import { Dispatch, SetStateAction, useEffect, useReducer } from 'react';
 import { authEncoded } from '@lib/session';
@@ -21,7 +21,7 @@ export const ProviderTypes = (props: {
   register: boolean;
   setLoading: Dispatch<SetStateAction<boolean>>;
 }) => {
-  const { mutate } = useUsername();
+  const { mutate } = useData();
   const { register, setLoading } = props;
 
   // Supported authentication providers

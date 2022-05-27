@@ -17,7 +17,7 @@ import { useRouter } from 'next/router';
 import toast from 'react-hot-toast';
 import { EyeIcon, EyeOffIcon } from '@heroicons/react/solid';
 import { ResetPassword } from './password-reset';
-import { useUsername } from 'hooks/user-username';
+import { useData } from 'hooks/user-data';
 import { doc, writeBatch } from 'firebase/firestore';
 import { authEncoded } from '@lib/session';
 
@@ -27,7 +27,7 @@ export const Email = (props: {
   setLoading: Dispatch<SetStateAction<boolean>>;
 }) => {
   const { setHideProviders, setLoading } = props;
-  const { mutate } = useUsername();
+  const { mutate } = useData();
 
   const [resetPassword, setResetPassword] = useState<boolean>(false);
   const [passwordVisible, setPasswordVisibility] = useState<boolean>(false);

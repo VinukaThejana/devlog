@@ -2,7 +2,7 @@ import { auth } from 'config/firebase';
 import { User } from 'firebase/auth';
 import { useEffect, useState } from 'react';
 import { useAuthState } from 'react-firebase-hooks/auth';
-import { useUsername } from './user-username';
+import { useData } from './user-data';
 
 /**
  * @description - Get the username from the cookie and the
@@ -11,16 +11,19 @@ import { useUsername } from './user-username';
 export const useUserData = (): {
   user: User | null | undefined;
   username: string | null;
+  photoURL: string | null;
   validating: boolean | undefined;
 } => {
   const [user, loading] = useAuthState(auth());
   const [validating, setValidating] = useState<boolean>(true);
   const [username, setUsername] = useState<string | null>(null);
+  const [photoURL, setPhotoURL] = useState<string | null>(null);
 
-  const { data, error } = useUsername();
+  const { data, error } = useData();
   useEffect(() => {
     if (data) {
       setUsername(data.username);
+      setPhotoURL(data.photoURL);
     }
 
     // Identify wether the username is loading
@@ -37,5 +40,5 @@ export const useUserData = (): {
     }
   }, [data, error, loading, validating]);
 
-  return { user, username, validating };
+  return { user, username, photoURL, validating };
 };

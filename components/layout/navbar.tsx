@@ -7,8 +7,8 @@ import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { authEncoded } from '@lib/session';
 
-const Navbar = () => {
-  const { user, username, validating } = useUserContext();
+export const Navbar = () => {
+  const { user, username, photoURL, validating } = useUserContext();
   const router = useRouter();
 
   return (
@@ -75,17 +75,16 @@ const Navbar = () => {
                   </div>
 
                   <div className="flex">
-                    <Image
-                      src={
-                        auth().currentUser?.photoURL ||
-                        `https://avatars.dicebear.com/api/adventurer/${user.uid}.svg`
-                      }
-                      alt={user.displayName || 'profile picture'}
-                      width={50}
-                      height={50}
-                      className="rounded-full"
-                      onClick={() => router.push(`/${username}`)}
-                    />
+                    {photoURL ? (
+                      <Image
+                        src={photoURL}
+                        alt={user.displayName || 'profile picture'}
+                        width={50}
+                        height={50}
+                        className="rounded-full"
+                        onClick={() => router.push(`/${username}`)}
+                      />
+                    ) : null}
                   </div>
                 </div>
               </div>
@@ -96,5 +95,3 @@ const Navbar = () => {
     </nav>
   );
 };
-
-export { Navbar };

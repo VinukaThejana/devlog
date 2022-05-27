@@ -14,7 +14,7 @@ import {
   where,
   writeBatch,
 } from 'firebase/firestore';
-import { useUsername } from 'hooks/user-username';
+import { useData } from 'hooks/user-data';
 import { IUserDocument } from 'interfaces/firebase';
 import debounce from 'lodash.debounce';
 import { useRouter } from 'next/router';
@@ -36,7 +36,7 @@ export const UsernameModal = (props: {
   setUsernameChangeModal: Dispatch<SetStateAction<boolean>>;
 }) => {
   const { user, setUsernameChangeModal, showUsernameChangeModal } = props;
-  const { mutate } = useUsername();
+  const { mutate } = useData();
 
   const [formValue, setFormValue] = useState<string>('');
   const [isValid, setIsValid] = useState<boolean>(false);

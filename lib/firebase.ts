@@ -106,3 +106,18 @@ export const deleteUser = async () => {
     toast.error('There was a problem deleting your account');
   }
 };
+
+/**
+ * @description - Logout the user safely by deleting the session
+ * */
+export const logout = async () => {
+  await fetch('/api/auth/logout', {
+    method: 'POST',
+    headers: {
+      Authorization: `Basic ${authEncoded}`,
+      'Content-Type': 'application/json',
+    },
+  });
+
+  await signOut(auth());
+};

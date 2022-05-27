@@ -11,4 +11,5 @@ export interface ISessionCookie {
 export type ISession = IronSession & {
   uid: string;
   username: string;
+  photoURL: string;
 };

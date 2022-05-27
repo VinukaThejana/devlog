@@ -40,14 +40,16 @@ export default withIronSessionApiRoute(async function (
       const userData = userSnapshot.data() as IUserDocument;
 
       const username = userData?.username;
+      const photoURL = userData?.photoURL;
 
-      if (!username) {
-        return res.status(400).send('Internal server error');
+      if (!(username && photoURL)) {
+        return res.status(500).send('Internal server error');
       }
 
       // Save the username and the uid to the session
       (req.session as ISession).uid = uid;
       (req.session as ISession).username = username;
+      (req.session as ISession).photoURL = photoURL;
 
       // Save the sesion
       await req.session.save();
