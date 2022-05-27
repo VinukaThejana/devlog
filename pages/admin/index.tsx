@@ -1,61 +1,35 @@
 import { Layout } from '@components/layout/layout';
 import { CreatePost } from '@components/posts/create-post';
 import { AdminPosts } from '@components/posts/posts-admin';
-import { sessionOptions } from 'config/session';
-import { ISession } from 'interfaces/session';
-import { withIronSessionSsr } from 'iron-session/next';
-import { GetServerSideProps } from 'next';
-import Head from 'next/head';
+import { Loader } from '@components/utils/loader';
+import { useUserContext } from 'context/context';
 import { ReactElement } from 'react';
+import Head from 'next/head';
 
-const Admin = (props: { username: string; uid: string }) => {
-  const { username, uid } = props;
+const Admin = () => {
+	const { user, username, validating } = useUserContext();
 
-  return (
-    <div className="flex flex-col items-center justify-center min-h-screen">
-      <Head>
-        <title>Manage posts</title>
-      </Head>
+  return validating ? (
+		<main className="flex flex-col items-center justify-center min-h-screen">
+			<Loader show={validating} />
+		</main>
+  ) : (
+		<>
+			{user && username ? (
+				<div className="flex flex-col items-center justify-center min-h-screen">
+					<Head>
+						<title>Manage posts</title>
+					</Head>
 
-      <main className="flex flex-col items-center justify-center gap-4 px-5 py-20">
-        <CreatePost username={username} uid={uid} />
-        <AdminPosts uid={uid} />
-      </main>
-    </div>
-  );
+					<main className="flex flex-col items-center justify-center gap-4 px-5 py-20">
+						<CreatePost username={username} uid={user.uid} />
+						<AdminPosts uid={user.uid} />
+					</main>
+				</div>
+			): null}
+		</>
+	)
 };
-
-// Only let authenticated users visit this page
-export const getServerSideProps: GetServerSideProps = withIronSessionSsr(
-  async function getServerSideProps(context) {
-    // Cache the result
-    context.res.setHeader(
-      'Cache-Control',
-      'public, s-maxage=10, stale-while-revalidate=59'
-    );
-
-    const { session } = context.req;
-
-    const { username, uid } = session as ISession;
-
-    if (!(username && uid)) {
-      return {
-        redirect: {
-          destination: '/login',
-          permanent: false,
-        },
-      };
-    }
-
-    return {
-      props: {
-        username,
-        uid,
-      },
-    };
-  },
-  sessionOptions
-);
 
 Admin.getLayout = function getLayout(page: ReactElement) {
   return <Layout>{page}</Layout>;
