@@ -3,6 +3,7 @@ import ReactMarkdown from 'react-markdown';
 import Link from 'next/link';
 import { Timestamp } from 'firebase/firestore';
 import { BanIcon, GlobeIcon } from '@heroicons/react/solid';
+import Image from 'next/image';
 
 // Get the average reading time of an post
 const getPostReadingTime = (postContent: string) => {
@@ -54,18 +55,22 @@ export const PostCard = (props: {
                 <h1 className="text-lg">{post.title}</h1>
                 <h1 className="text-lg">{getDate(index)}</h1>
               </div>
-              <div className="flex flex-col items-center justify-center mt-8 break-words px-2">
+              <div className="flex flex-col sm:flex-row items-center justify-center mt-8 break-words px-2 gap-6">
+                {post.summaryPhoto ? (
+                  <Image
+                    src={post.summaryPhoto}
+                    alt={post.title}
+                    width={2200}
+                    height={3000}
+                  />
+                ) : null}
                 <ReactMarkdown>{post.summary}</ReactMarkdown>
               </div>
               <div className="flex justify-between p-5 mt-8">
-								<div className="flex flex-col items-center justify-center">
-									Time to read: {getPostReadingTime(post.content)} minutes
-									<>
-										{!admin && (
-											<p>By {post.username}</p>
-										)}
-									</>
-								</div>
+                <div className="flex flex-col items-center justify-center">
+                  Time to read: {getPostReadingTime(post.content)} minutes
+                  <>{!admin && <p>By {post.username}</p>}</>
+                </div>
                 {admin ? (
                   <>
                     {post.published ? (
