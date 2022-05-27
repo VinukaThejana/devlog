@@ -153,7 +153,11 @@ export const ProviderTypes = (props: {
       })
       .catch((error: FirebaseError) => {
         setLoading(false);
-        console.error(error);
+				if (error.code === "auth/account-exists-with-different-credential") {
+					toast.error("There is already an account using this email address")
+				} else {
+					console.error(error)
+				}
       });
   });
 
