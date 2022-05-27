@@ -1,3 +1,4 @@
+import { logout } from '@lib/firebase';
 import { auth } from 'config/firebase';
 import { User } from 'firebase/auth';
 import { useEffect, useState } from 'react';
@@ -38,7 +39,14 @@ export const useUserData = (): {
     } else {
       setValidating(false);
     }
-  }, [data, error, loading, validating]);
+
+    // Check for retundant sessions
+    if (!validating) {
+      if (!user && data) {
+        logout();
+      }
+    }
+  }, [data, error, loading, validating, user]);
 
   return { user, username, photoURL, validating };
 };

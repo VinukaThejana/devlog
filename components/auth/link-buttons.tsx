@@ -67,6 +67,7 @@ export const LinkButtons = (props: {
     );
   };
 
+	// Listen for the auth token and link accounts accordingly
   useEffect(() => {
     getRedirectResult(auth())
       .then((result) => {
