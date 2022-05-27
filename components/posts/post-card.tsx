@@ -54,17 +54,21 @@ export const PostCard = (props: {
                 <h1 className="text-lg">{post.title}</h1>
                 <h1 className="text-lg">{getDate(index)}</h1>
               </div>
-              <div className="flex flex-col sm:flex-row items-center justify-center mt-8 break-words px-2 gap-6">
-                {post.summaryPhoto ? (
+              {post.summaryPhoto ? (
+                <div className="flex flex-col items-center justify-center sm:grid sm:grid-cols-3 mt-8 break-words px-2 gap-6">
                   <Image
                     src={post.summaryPhoto}
                     alt={post.title}
-                    width={2200}
-                    height={3000}
+                    width={220}
+                    height={280}
                   />
-                ) : null}
-                <p>{post.summary}</p>
-              </div>
+                  <p className="sm:col-span-2 sm:self-center">{post.summary}</p>
+                </div>
+              ) : (
+                <div className="flex flex-col items-center justify-center mt-8 break-words px-2 gap-6">
+                  <p>{post.summary}</p>
+                </div>
+              )}
               <div className="flex justify-between p-5 mt-8">
                 <div className="flex flex-col items-center justify-center">
                   Time to read: {getPostReadingTime(post.content)} minutes
