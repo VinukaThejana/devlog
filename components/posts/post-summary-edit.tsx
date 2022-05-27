@@ -58,28 +58,34 @@ export const EditSummary = (props: {
     `posts/${defaultValues.slug}/summary`
   );
 
-  useEffect(() => {
-    if (Number(progress) > 0 && Number(progress) < 100 && !url) {
-      toast.success('Uploading.....');
-      setLoading(true);
-    } else {
-      toast.success('uploaded');
-      setLoading(false);
-    }
+  useEffect(
+    () => {
+      if (Number(progress) > 0 && Number(progress) < 100 && !url) {
+        toast.success('Uploading.....');
+        setLoading(true);
+      } else {
+        toast.success('uploaded');
+        setLoading(false);
+      }
 
-		const updateSummaryPhoto = async () => {
-			const postRef = doc(db(), DB.COLLECTIONS.USERS, defaultValues.uid, DB.COLLECTIONS.POSTS, defaultValues.slug);
-			await updateDoc(postRef, {
-				summaryPhoto: url
-			})
-		}
+      const updateSummaryPhoto = async () => {
+        const postRef = doc(
+          db(),
+          DB.COLLECTIONS.USERS,
+          defaultValues.uid,
+          DB.COLLECTIONS.POSTS,
+          defaultValues.slug
+        );
+        await updateDoc(postRef, {
+          summaryPhoto: url,
+        });
+      };
 
-		url && updateSummaryPhoto();
-
-  },
-	// eslint-disable-next-line
-	[url]
-	);
+      url && updateSummaryPhoto();
+    },
+    // eslint-disable-next-line
+    [url]
+  );
 
   // Handle summary image upload
   const handleUpload = (event: ChangeEvent<HTMLInputElement>) => {

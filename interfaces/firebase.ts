@@ -27,6 +27,7 @@ export interface IPostDocument {
   updatedAt: Date;
   username: string;
   summary: string;
+	summaryPhoto: string;
 }
 
 export interface IProviderData {
