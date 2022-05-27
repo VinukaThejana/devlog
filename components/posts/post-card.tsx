@@ -1,5 +1,4 @@
 import { IPostDocument } from 'interfaces/firebase';
-import ReactMarkdown from 'react-markdown';
 import Link from 'next/link';
 import { Timestamp } from 'firebase/firestore';
 import { BanIcon, GlobeIcon } from '@heroicons/react/solid';
@@ -64,7 +63,7 @@ export const PostCard = (props: {
                     height={3000}
                   />
                 ) : null}
-                <ReactMarkdown>{post.summary}</ReactMarkdown>
+                <p>{post.summary}</p>
               </div>
               <div className="flex justify-between p-5 mt-8">
                 <div className="flex flex-col items-center justify-center">
