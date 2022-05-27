@@ -131,26 +131,47 @@ export const ProviderTypes = (props: {
             });
 
             await batch.commit();
-          }
-          // Get the idToken of the user
-          const idToken = await result.user.getIdToken();
 
-          // Create a session for new as well as loggin in users
-          const response = await fetch('/api/auth/login', {
-            method: 'POST',
-            headers: {
-              Authorization: `Basic ${authEncoded}`,
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ idToken }),
-          });
+            // Get the idToken of the user
+            const idToken = await result.user.getIdToken();
 
-          if (Number(response.status) === 200) {
-            mutate();
-            router.push('/');
+            // Create a session for new as well as loggin in users
+            const response = await fetch('/api/auth/login', {
+              method: 'POST',
+              headers: {
+                Authorization: `Basic ${authEncoded}`,
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({ idToken }),
+            });
+
+            if (Number(response.status) === 200) {
+              router.reload();
+            } else {
+              toast.error('An error occured');
+              signOut(auth());
+            }
           } else {
-            toast.error('An error occured');
-            signOut(auth());
+            // Get the idToken of the user
+            const idToken = await result.user.getIdToken();
+
+            // Create a session for new as well as loggin in users
+            const response = await fetch('/api/auth/login', {
+              method: 'POST',
+              headers: {
+                Authorization: `Basic ${authEncoded}`,
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({ idToken }),
+            });
+
+            if (Number(response.status) === 200) {
+              mutate();
+              router.push('/');
+            } else {
+              toast.error('An error occured');
+              signOut(auth());
+            }
           }
         }
       })
