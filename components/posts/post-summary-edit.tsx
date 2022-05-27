@@ -81,7 +81,7 @@ export const EditSummary = (props: {
         });
       };
 
-      url && updateSummaryPhoto();
+      url && Number(progress) === 100 && updateSummaryPhoto();
     },
     // eslint-disable-next-line
     [url]
