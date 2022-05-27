@@ -8,7 +8,7 @@ import {
   GithubAuthProvider,
   GoogleAuthProvider,
   signInWithRedirect,
-    signOut,
+  signOut,
   TwitterAuthProvider,
   updateProfile,
 } from 'firebase/auth';
@@ -24,7 +24,7 @@ export const ProviderTypes = (props: {
   setLoading: Dispatch<SetStateAction<boolean>>;
 }) => {
   const { register, setLoading } = props;
-	const { mutate } = useData();
+  const { mutate } = useData();
 
   // Supported authentication providers
   enum PROVIDERS {
@@ -145,14 +145,13 @@ export const ProviderTypes = (props: {
             body: JSON.stringify({ idToken }),
           });
 
-					if (Number(response.status) === 200) {
-						mutate()
-						router.push("/")
-					} else {
-						toast.error("An error occured")
-						signOut(auth());
-					}
-
+          if (Number(response.status) === 200) {
+            mutate();
+            router.push('/');
+          } else {
+            toast.error('An error occured');
+            signOut(auth());
+          }
         }
       })
       .catch((error: FirebaseError) => {
