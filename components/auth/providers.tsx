@@ -13,7 +13,6 @@ import {
   updateProfile,
 } from 'firebase/auth';
 import { doc, writeBatch } from 'firebase/firestore';
-import { useData } from 'hooks/user-data';
 import { useRouter } from 'next/router';
 import { Dispatch, SetStateAction, useEffect, useReducer } from 'react';
 import { authEncoded } from '@lib/session';
@@ -24,7 +23,6 @@ export const ProviderTypes = (props: {
   setLoading: Dispatch<SetStateAction<boolean>>;
 }) => {
   const { register, setLoading } = props;
-  const { mutate } = useData();
 
   // Supported authentication providers
   enum PROVIDERS {
@@ -131,47 +129,25 @@ export const ProviderTypes = (props: {
             });
 
             await batch.commit();
+          }
+          // Get the idToken of the user
+          const idToken = await result.user.getIdToken();
 
-            // Get the idToken of the user
-            const idToken = await result.user.getIdToken();
+          // Create a session for new as well as loggin in users
+          const response = await fetch('/api/auth/login', {
+            method: 'POST',
+            headers: {
+              Authorization: `Basic ${authEncoded}`,
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ idToken }),
+          });
 
-            // Create a session for new as well as loggin in users
-            const response = await fetch('/api/auth/login', {
-              method: 'POST',
-              headers: {
-                Authorization: `Basic ${authEncoded}`,
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({ idToken }),
-            });
-
-            if (Number(response.status) === 200) {
-              router.reload();
-            } else {
-              toast.error('An error occured');
-              signOut(auth());
-            }
+          if (Number(response.status) === 200) {
+            router.reload();
           } else {
-            // Get the idToken of the user
-            const idToken = await result.user.getIdToken();
-
-            // Create a session for new as well as loggin in users
-            const response = await fetch('/api/auth/login', {
-              method: 'POST',
-              headers: {
-                Authorization: `Basic ${authEncoded}`,
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({ idToken }),
-            });
-
-            if (Number(response.status) === 200) {
-              mutate();
-              router.push('/');
-            } else {
-              toast.error('An error occured');
-              signOut(auth());
-            }
+            toast.error('An error occured');
+            signOut(auth());
           }
         }
       })
