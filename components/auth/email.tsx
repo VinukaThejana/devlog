@@ -140,8 +140,6 @@ export const Email = (props: {
             const userRef = doc(db(), 'users', uid);
             const usernameRef = doc(db(), 'usernames', username);
 
-            console.log(username, uid, email, displayName, profilePicture);
-
             const batch = writeBatch(db());
 
             batch.set(usernameRef, {
@@ -153,6 +151,7 @@ export const Email = (props: {
               photoURL: profilePicture,
               displayName,
               username,
+              posts: 0,
             });
 
             await batch.commit();
