@@ -2,8 +2,10 @@ import { Loader } from '@components/utils/loader';
 import { DB } from '@lib/firebase';
 import { db } from 'config/firebase';
 import { doc, serverTimestamp, updateDoc } from 'firebase/firestore';
+import { useStorage } from 'hooks/use-storage';
 import { IPostDocument } from 'interfaces/firebase';
-import { useState } from 'react';
+import { IFile } from 'interfaces/utils';
+import { ChangeEvent, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
 
@@ -44,6 +46,50 @@ export const EditSummary = (props: {
     toast.success('Post updated succsessfully');
   };
 
+  // Handle summary image upload
+  const [image, setImage] = useState<IFile | null>(null);
+  const [filename, setFilename] = useState<string>('');
+  const [loading, setLoading] = useState<boolean>(false);
+
+  const [progress, url] = useStorage(
+    image,
+    filename,
+    defaultValues.uid,
+    `posts/${defaultValues.slug}/summary`
+  );
+
+  useEffect(() => {
+    if (Number(progress) > 0 && Number(progress) < 100 && !url) {
+      toast.success('Uploading.....');
+      setLoading(true);
+    } else {
+      toast.success('uploaded');
+      setLoading(false);
+    }
+
+		const updateSummaryPhoto = async () => {
+			const postRef = doc(db(), DB.COLLECTIONS.USERS, defaultValues.uid, DB.COLLECTIONS.POSTS, defaultValues.slug);
+			await updateDoc(postRef, {
+				summaryPhoto: url
+			})
+		}
+
+		url && updateSummaryPhoto();
+
+  },
+	// eslint-disable-next-line
+	[url]
+	);
+
+  // Handle summary image upload
+  const handleUpload = (event: ChangeEvent<HTMLInputElement>) => {
+    event.preventDefault();
+    if (event.target.files instanceof FileList && event.target.files.length) {
+      setFilename('summary.jpg');
+      setImage(event.target.files[0]);
+    }
+  };
+
   return (
     <div
       className={`${
@@ -72,6 +118,17 @@ export const EditSummary = (props: {
         ></textarea>
         {errors.summary && (
           <p className="text-sm font-bold">{errors.summary?.message}</p>
+        )}
+
+        {loading ? (
+          <Loader show={loading} />
+        ) : (
+          <input
+            onChange={handleUpload}
+            className="block w-full h-9 text-lg mt-4  rounded-lg border cursor-pointer text-gray-400 focus:outline-none bg-gray-700 border-gray-600 placeholder-gray-400"
+            type="file"
+            accept="image/x-png, image/jpeg"
+          />
         )}
 
         <button
