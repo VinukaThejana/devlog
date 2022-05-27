@@ -52,7 +52,7 @@ export const CreatePost = (props: { username: string; uid: string }) => {
       let unsubscribe: unknown;
 
       if (slug.length >= 3) {
-				console.log("Firebase read executed")
+        console.log('Firebase read executed');
         unsubscribe = onSnapshot(
           doc(db(), DB.COLLECTIONS.USERS, uid, DB.COLLECTIONS.POSTS, slug),
           (postDoc) => {

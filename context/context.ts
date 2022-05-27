@@ -4,7 +4,7 @@ import { createContext, useContext } from 'react';
 export const UserContext = createContext<IUserContext>({
   user: undefined,
   username: undefined,
-	photoURL: undefined,
+  photoURL: undefined,
   validating: undefined,
 });
 
