@@ -130,7 +130,7 @@ export const EditSummary = (props: {
         ) : (
           <input
             onChange={handleUpload}
-            className="block w-full h-9 text-lg mt-4  rounded-lg border cursor-pointer text-gray-400 focus:outline-none bg-gray-700 border-gray-600 placeholder-gray-400"
+            className="block w-full text-lg rounded-lg border cursor-pointer text-gray-400 focus:outline-none bg-gray-700 border-gray-600 placeholder-gray-400 mt-4"
             type="file"
             accept="image/x-png, image/jpeg"
           />
